@@ -45,7 +45,15 @@
         toolbar: ["create"],
         columns: [
             { field: "Email", title: "Email", width: "300px" },
-            { field: "Type", title: "User Type" },
+            {
+                field: "Type", title: "User Type", validation: { required: true, maxlength: 1 },
+                editor: function (container, options) {
+                    var input = $("<input/>");
+                    input.attr("name", options.field);
+                    input.attr("placeholder", "User Role (T OR S)");
+                    input.appendTo(container);
+                }
+            },
             {
                 command: [{ name: "edit" }, {
                     name: "Delete", click: function (e) {
