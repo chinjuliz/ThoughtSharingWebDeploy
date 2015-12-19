@@ -105,53 +105,71 @@
 
     function handleUpdate(e) {
         e.container.find(".k-button.k-grid-update").click(function () {
-            var query = new Parse.Query("ApplicationUsers");
-            var grid = $("#teacherGrid").data("kendoGrid");
-            var rowId = grid.dataItem($("#teacherGrid").data("kendoGrid").table.find("tr[data-uid=" + e.model.uid + "]")).id;
-            query.equalTo("objectId", rowId);
-            query.find({
-                success: function (Contact) {
-                    if (Contact.length > 0) {
-                        Contact[0].set("Email", $("[name='Email']").val());
-                        Contact[0].set("Type", $("[name='Type']").val());
-                        Contact[0].save(null, {
-                            success: function (contact) {
-                                toastr.success("Updated Successfully");
-                            },
-                            error: function (data, error) {
-                                toastr.error("Error");
-                            }
-                        });
+            if (isValidAdminData()) {
+                var query = new Parse.Query("ApplicationUsers");
+                var grid = $("#teacherGrid").data("kendoGrid");
+                var rowId = grid.dataItem($("#teacherGrid").data("kendoGrid").table.find("tr[data-uid=" + e.model.uid + "]")).id;
+                query.equalTo("objectId", rowId);
+                query.find({
+                    success: function (Contact) {
+                        if (Contact.length > 0) {
+                            Contact[0].set("Email", $("[name='Email']").val());
+                            Contact[0].set("Type", $("[name='Type']").val());
+                            Contact[0].save(null, {
+                                success: function (contact) {
+                                    toastr.success("Updated Successfully");
+                                },
+                                error: function (data, error) {
+                                    toastr.error("Error");
+                                }
+                            });
+                        }
+                    },
+                    error: function (data, error) {
+                        toastr.error("Error");
                     }
-                },
-                error: function (data, error) {
-                    toastr.error("Error");
-                }
+                });
+            } else {
+                toastr.error("Enter email OR Type");
+            }
             });
-        });
     }
 
     function handleInsert(e) {
         e.container.find(".k-button.k-grid-update").click(function () {
             var email = $("[name='Email']").val();
             var type = $("[name='Type']").val();
-
-            var apUsers = new Parse.Object("ApplicationUsers");
-            apUsers.set("Email", email);
-            apUsers.set("Type", type);
-            apUsers.save(null, {
-                success: function (data) {
-                    // Execute any logic that should take place after the object is saved.
-                    toastr.success("Added Successfully");
-                },
-                error: function (data, error) {
-                    // Execute any logic that should take place if the save fails.
-                    // error is a Parse.Error with an error code and message.
-                    toastr.error("Error");
-                }
-            });
+            if (isValidAdminData()) {
+                var apUsers = new Parse.Object("ApplicationUsers");
+                apUsers.set("Email", email);
+                apUsers.set("Type", type);
+                apUsers.save(null, {
+                    success: function (data) {
+                        // Execute any logic that should take place after the object is saved.
+                        toastr.success("Added Successfully");
+                    },
+                    error: function (data, error) {
+                        // Execute any logic that should take place if the save fails.
+                        // error is a Parse.Error with an error code and message.
+                        toastr.error("Error");
+                    }
+                });
+            } else {
+                toastr.error("Enter email OR Type");
+            }
+            
         });
 
 
+    }
+
+    function isValidAdminData() {
+        var email = $("[name='Email']").val();
+        var type = $("[name='Type']").val();
+        if (email === "" || type === "") {
+            return false;
+        } else {
+            return true;
+        }
     }
 });
